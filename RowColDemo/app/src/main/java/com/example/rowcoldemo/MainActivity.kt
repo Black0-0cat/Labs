@@ -74,13 +74,15 @@ fun TextCell(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
+@Preview(showBackground = true)@Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    Row(modifier = modifier.fillMaxSize()) {
-        TextCell("1", Modifier.weight(weight = 0.2f, fill = true))
-        TextCell("2", Modifier.weight(weight = 0.4f, fill = true))
-        TextCell("3", Modifier.weight(weight = 0.4f, fill = true))
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxSize() // Занимаем весь экран, чтобы увидеть эффект распределения
+    ) {
+        TextCell("1")
+        TextCell("2")
+        TextCell("3")
     }
 }
-
