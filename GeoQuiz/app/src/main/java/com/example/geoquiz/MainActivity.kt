@@ -17,6 +17,14 @@ import androidx.compose.ui.unit.sp
 import com.example.geoquiz.ui.theme.GeoQuizTheme
 import kotlinx.coroutines.launch
 
+// Мягкая палитра для тёмной темы (без резких контрастов)
+val DarkBackground = Color(0xFF121212)      // Основной тёмный фон
+val DarkSurface = Color(0xFF1E1E1E)         // Цвет верхней панели
+val DarkButton = Color(0xFF333333)          // Цвет активных кнопок
+val DarkButtonDisabled = Color(0xFF222222)  // Цвет заблокированной кнопки
+val SoftWhiteText = Color(0xFFE0E0E0)       // Мягкий светлый текст
+val MutedGrayText = Color(0xFF666666)       // Приглушённый текст для неактивной кнопки
+
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,11 +34,12 @@ class MainActivity : ComponentActivity() {
             GeoQuizTheme {
                 val snackbarHostState = remember { SnackbarHostState() }
                 Scaffold(
+                    containerColor = DarkBackground,
                     topBar = {
                         TopAppBar(
-                            title = { Text("GeoQuiz", color = Color.White) },
+                            title = { Text("GeoQuiz", color = SoftWhiteText) },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = Color(0xFF6200EE)
+                                containerColor = DarkSurface
                             )
                         )
                     },
@@ -61,12 +70,21 @@ val questionBank = listOf(
     Question("Lake Baikal is the world's oldest and deepest freshwater lake.", true)
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GeoQuizPreview() {
     GeoQuizTheme {
         val snackbarHostState = remember { SnackbarHostState() }
-        Scaffold { innerPadding ->
+        Scaffold(
+            containerColor = DarkBackground,
+            topBar = {
+                TopAppBar(
+                    title = { Text("GeoQuiz", color = SoftWhiteText) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkSurface)
+                )
+            }
+        ) { innerPadding ->
             GeoQuizScreen(snackbarHostState, Modifier.padding(innerPadding))
         }
     }
@@ -78,10 +96,17 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
     var isAnswered by remember { mutableStateOf(false) }
     var score by remember { mutableIntStateOf(0) }
 
+    val coroutineScope = rememberCoroutineScope()
     val currentQuestion = questionBank[currentIndex]
     val isLastQuestion = currentIndex == questionBank.lastIndex
 
-    val coroutineScope = rememberCoroutineScope()
+    // Настройка мягких тёмных цветов для кнопок
+    val darkButtonColors = ButtonDefaults.buttonColors(
+        containerColor = DarkButton,
+        contentColor = SoftWhiteText,
+        disabledContainerColor = DarkButtonDisabled,
+        disabledContentColor = MutedGrayText
+    )
 
     val checkAnswer: (Boolean) -> Unit = { userAnswer ->
         if (userAnswer == currentQuestion.answer) {
@@ -108,6 +133,7 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
     ) {
         Text(
             text = currentQuestion.text,
+            color = SoftWhiteText,
             fontSize = 18.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -121,13 +147,13 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
             ) {
                 Button(
                     onClick = { checkAnswer(true) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                    colors = darkButtonColors
                 ) {
                     Text("TRUE")
                 }
                 Button(
                     onClick = { checkAnswer(false) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                    colors = darkButtonColors
                 ) {
                     Text("FALSE")
                 }
@@ -150,7 +176,7 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
                             isAnswered = false
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                    colors = darkButtonColors
                 ) {
                     Text("NEXT >")
                 }
