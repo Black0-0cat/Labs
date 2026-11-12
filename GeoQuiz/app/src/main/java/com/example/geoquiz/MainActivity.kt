@@ -73,9 +73,12 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
     // Индекс текущего вопроса
     var currentIndex by remember { mutableIntStateOf(0) }
     val currentQuestion = questionBank[currentIndex]
+    val isLastQuestion = currentIndex == questionBank.lastIndex
 
     var isAnswered by remember { mutableStateOf(false) } // Ответил ли пользователь на текущий вопрос
     var score by remember { mutableIntStateOf(0) }         // Счётчик правильных ответов
+
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
@@ -116,13 +119,24 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
         Spacer(modifier = Modifier.height(16.dp))
 
         // Кнопка NEXT >
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Button(onClick = { /* Логика добавится на Этапе 4 */ }) {
-                Text("NEXT >")
+        if (!(isLastQuestion && isAnswered)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    enabled = isAnswered, // Кнопка активна только после ответа на вопрос
+                    onClick = {
+                        if (!isLastQuestion) {
+                            currentIndex++
+                            isAnswered = false // Возвращаем кнопки TRUE и FALSE для нового вопроса
+                        }
+                    }
+                ) {
+                    Text("NEXT >")
+                }
             }
         }
+
     }
 }
