@@ -1,5 +1,4 @@
-package com.example.geoquiz
-
+package com.example.geoquiz // <-- Проверьте совпадение с именем пакета вашего проекта!
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,14 +18,27 @@ import com.example.geoquiz.ui.theme.GeoQuizTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             GeoQuizTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                val snackbarHostState = remember { SnackbarHostState() }
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("GeoQuiz", color = Color.White) },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color(0xFF6200EE)
+                            )
+                        )
+                    },
+                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    GeoQuizScreen(
+                        snackbarHostState = snackbarHostState,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -35,29 +47,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    GeoQuizTheme {
-        Greeting("Android")
-    }
-}
-
-// Модель одного вопроса
 data class Question(
     val text: String,
     val answer: Boolean
 )
 
-// Список вопросов из лабораторной работы
 val questionBank = listOf(
     Question("Canberra is the capital of Australia.", true),
     Question("The Pacific Ocean is larger than the Atlantic Ocean.", true),
@@ -67,18 +61,43 @@ val questionBank = listOf(
     Question("Lake Baikal is the world's oldest and deepest freshwater lake.", true)
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun GeoQuizPreview() {
+    GeoQuizTheme {
+        val snackbarHostState = remember { SnackbarHostState() }
+        Scaffold { innerPadding ->
+            GeoQuizScreen(snackbarHostState, Modifier.padding(innerPadding))
+        }
+    }
+}
+
 @Composable
 fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Modifier) {
-    // Индекс текущего вопроса
     var currentIndex by remember { mutableIntStateOf(0) }
+    var isAnswered by remember { mutableStateOf(false) }
+    var score by remember { mutableIntStateOf(0) }
+
     val currentQuestion = questionBank[currentIndex]
     val isLastQuestion = currentIndex == questionBank.lastIndex
 
-    var isAnswered by remember { mutableStateOf(false) } // Ответил ли пользователь на текущий вопрос
-    var score by remember { mutableIntStateOf(0) }         // Счётчик правильных ответов
-
     val coroutineScope = rememberCoroutineScope()
+
+    val checkAnswer: (Boolean) -> Unit = { userAnswer ->
+        if (userAnswer == currentQuestion.answer) {
+            score++
+        }
+        isAnswered = true
+
+        if (isLastQuestion) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = "Тест завершён! Правильных ответов: $score из ${questionBank.size}",
+                    duration = SnackbarDuration.Indefinite
+                )
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -87,7 +106,6 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Текст вопроса
         Text(
             text = currentQuestion.text,
             fontSize = 18.sp,
@@ -95,22 +113,22 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Кнопки TRUE и FALSE
-        val checkAnswer: (Boolean) -> Unit = { userAnswer ->
-            if (userAnswer == currentQuestion.answer) {
-                score++
-            }
-            isAnswered = true // Прячем кнопки TRUE и FALSE
-        }
+        // Пункт 2: Кнопки скрываются после ответа на текущий вопрос
         if (!isAnswered) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = { checkAnswer(true) }) {
+                Button(
+                    onClick = { checkAnswer(true) },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                ) {
                     Text("TRUE")
                 }
-                Button(onClick = { checkAnswer(false) }) {
+                Button(
+                    onClick = { checkAnswer(false) },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                ) {
                     Text("FALSE")
                 }
             }
@@ -118,25 +136,25 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Кнопка NEXT >
+        // Пункт 3: Кнопка Next блокируется и скрывается после ответа на последний вопрос
         if (!(isLastQuestion && isAnswered)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
-                    enabled = isAnswered, // Кнопка активна только после ответа на вопрос
+                    enabled = isAnswered,
                     onClick = {
                         if (!isLastQuestion) {
                             currentIndex++
-                            isAnswered = false // Возвращаем кнопки TRUE и FALSE для нового вопроса
+                            isAnswered = false
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
                 ) {
                     Text("NEXT >")
                 }
             }
         }
-
     }
 }
