@@ -74,6 +74,9 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
     var currentIndex by remember { mutableIntStateOf(0) }
     val currentQuestion = questionBank[currentIndex]
 
+    var isAnswered by remember { mutableStateOf(false) } // Ответил ли пользователь на текущий вопрос
+    var score by remember { mutableIntStateOf(0) }         // Счётчик правильных ответов
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -90,15 +93,23 @@ fun GeoQuizScreen(snackbarHostState: SnackbarHostState, modifier: Modifier = Mod
         )
 
         // Кнопки TRUE и FALSE
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = { /* Логика добавится на Этапе 3 */ }) {
-                Text("TRUE")
+        val checkAnswer: (Boolean) -> Unit = { userAnswer ->
+            if (userAnswer == currentQuestion.answer) {
+                score++
             }
-            Button(onClick = { /* Логика добавится на Этапе 3 */ }) {
-                Text("FALSE")
+            isAnswered = true // Прячем кнопки TRUE и FALSE
+        }
+        if (!isAnswered) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = { checkAnswer(true) }) {
+                    Text("TRUE")
+                }
+                Button(onClick = { checkAnswer(false) }) {
+                    Text("FALSE")
+                }
             }
         }
 
