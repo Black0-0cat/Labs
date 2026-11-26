@@ -1,0 +1,8 @@
+com.example.sharedflow.app-pngs-0 /home/blackcat/for_works/Android_apps/My_apps/Labs/SharedFlow/app/build/generated/res/pngs/debug
+com.example.sharedflow.app-updated_navigation_xml-1 /home/blackcat/for_works/Android_apps/My_apps/Labs/SharedFlow/app/build/generated/updated_navigation_xml/debug
+com.example.sharedflow.app-packageDebugResources-2 /home/blackcat/for_works/Android_apps/My_apps/Labs/SharedFlow/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.example.sharedflow.app-packageDebugResources-3 /home/blackcat/for_works/Android_apps/My_apps/Labs/SharedFlow/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.example.sharedflow.app-debug-4 /home/blackcat/for_works/Android_apps/My_apps/Labs/SharedFlow/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.example.sharedflow.app-debug-5 /home/blackcat/for_works/Android_apps/My_apps/Labs/SharedFlow/app/src/debug/res
+com.example.sharedflow.app-main-6 /home/blackcat/for_works/Android_apps/My_apps/Labs/SharedFlow/app/src/main/res
+gradleHome-0 /home/blackcat/.gradle
