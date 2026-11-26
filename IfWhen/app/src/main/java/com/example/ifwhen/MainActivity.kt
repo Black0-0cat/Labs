@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 
 
 class MainActivity : ComponentActivity() {
@@ -108,11 +111,21 @@ fun DayOfWeekScreen(modifier: Modifier = Modifier) {
 }
 
 
-@Preview(showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingPreview() {
+fun DayOfWeekPreview() {
     IfWhenTheme {
-        DayOfWeekScreen()
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("День недели", color = Color.White) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF6200EE))
+                )
+            }
+        ) { innerPadding ->
+            DayOfWeekScreen(Modifier.padding(innerPadding))
+        }
     }
 }
 
