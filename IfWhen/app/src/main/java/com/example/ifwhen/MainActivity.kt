@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +41,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             IfWhenTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
+                    DayOfWeekScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -49,6 +51,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DayOfWeekScreen(modifier: Modifier = Modifier) {
     var inputNumber by remember { mutableStateOf("") }
+    var resultText by remember { mutableStateOf("Введите номер дня (1–7)") }
 
     Column(
         modifier = modifier
@@ -81,14 +84,35 @@ fun DayOfWeekScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f)
             )
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = resultText,
+            fontSize = 22.sp,
+            color = Color.DarkGray
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                val number = inputNumber.trim().toIntOrNull()
+                resultText = getDayOfWeek(number)
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+        ) {
+            Text("ОК")
+        }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     IfWhenTheme {
-        //DayOfWeek
+        DayOfWeekScreen()
     }
 }
 
